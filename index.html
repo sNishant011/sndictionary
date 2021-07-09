@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="main.css">
+  <title>Dictionary | SN</title>
+</head>
+
+<body class="m-10">
+  <h1 class="display-3 m-3">Dictionary</h1>
+  <form class="row g-2">
+    <div class="col-auto">
+      <label for="input_word" class="visually-hidden">Word</label>
+      <input type="text" class="form-control" id="input_word" placeholder="Word">
+    </div>
+    <div class="col-auto">
+      <button type="button" class="btn btn-primary mb-3" onclick="wordScrapper()">Search</button>
+    </div>
+  </form>
+  <div class="meaning-container">
+    <h3 id="input-word"></h3>
+    <audio src="" controls></audio>
+    <p> <span id="meanings">
+    </p>
+  </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script>
+<script>
+  const wordScrapper = () => {
+    document.getElementById("input-word").innerHTML = ""
+    const word = (document.getElementById("input_word").value).trim()
+    if (word === null || word.length < 1) {
+      console.log("Please enter a valid word")
+    } else {
+
+      try {
+        axios.get("https://api.dictionaryapi.dev/api/v2/entries/en-US/" + word)
+          .then((response) => showMeaning(response.data))
+          .catch((error) => showError(error))
+      } catch (error) {
+        showError(error)
+      }
+    }
+  }
+  const showMeaning = (information) => {
+    console.log(information);
+    const required_info = information[0]
+    const audio_src = `https://${required_info.phonetics[0].oxford_audio}`
+    const meanings = required_info.meanings
+    document.querySelector("audio").src = audio_src
+    document.getElementById("input-word").innerHTML = `Word: ${required_info.word}`
+    document.getElementById("meanings").innerHTML = ""
+    meanings.forEach((meaning) => {
+      document.getElementById("meanings").innerHTML +=
+        `<div class="type lead">${meaning.partOfSpeech ?
+     meaning.partOfSpeech : ""}</div>
+   <div class="definition">${meaning.definitions[0].definition ? meaning.definitions[0].definition : ""}</div>
+   <div class="example text-muted"><q>${meaning.definitions[0].example ? meaning.definitions[0].example : ""}</q></div>`
+    })
+  }
+  const showError = (error) => {
+    const error1 = error.toString()
+    if (error1.includes("Network")) {
+      document.getElementById("meanings").innerHTML = `<div class="type lead">No Internet Access</div>`
+    } else if (error1.includes("40")) {
+      document.getElementById("meanings").innerHTML =
+        `<div class="type lead">Sorry!! Couldn't find that word.</div>`
+    } else {
+      document.getElementById("meanings").innerHTML =
+        `<div class="type lead">Ops!! Service currently unavailable.</div>`
+    }
+  }
+</script>
+
+</html>
