@@ -48,7 +48,7 @@
     } else {
 
       try {
-        axios.get("https://api.dictionaryapi.dev/api/v2/entries/en-US/" + word)
+        axios.get("https://api.dictionaryapi.dev/api/v2/entries/en/" + word)
           .then((response) => showMeaning(response.data))
           .catch((error) => showError(error))
       } catch (error) {
