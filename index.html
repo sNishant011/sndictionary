@@ -59,7 +59,7 @@
   const showMeaning = (information) => {
     console.log(information);
     const required_info = information[0]
-    const audio_src = `https://${required_info.phonetics[0].oxford_audio}`
+    const audio_src = `https://${required_info.phonetics[0].audio}`
     const meanings = required_info.meanings
     document.querySelector("audio").src = audio_src
     document.getElementById("input-word").innerHTML = `Word: ${required_info.word}`
